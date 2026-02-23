@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gradient Words</title>
+    <style>
+        html, body {
+          height: 100%;
+          margin: 0;
+          padding: 0;
+          text-align: center;
+          line-height: 1.5;
+        }
+        .red { color: red; }
+        .dark-red { color: firebrick; }
+        .crimson { color: crimson; }
+        .purple { color: #9920F7; }
+        .blue { color: blue; }
+        .lightseanavy { color: #0B5380; }
+        .black { color: black; }
+    </style>
+</head>
+<body>
+  <p class="black">Self-composed</p>
+  <p class="black">Prideful</p> 
+  <p class="dark-red">Assertive</p>
+  <p class="dark-red">Nonchalant</p> 
+  <p class="dark-red">Rosy</p>
+  <p class="dark-red">Unshakable</p>
+  <p class="dark-red">Imperturbable</p>
+  <p class="dark-red">Egotistical</p>
+  <p class="dark-red">Overweening</p>
+  <p class="dark-red">Self-appluading</p>
+  <p class="crimson">Smug</p>
+  <p class="crimson">Stuck-up</p>
+  <p class="crimson">Unshaken</p>
+  <p class="crimson">Self-asserting</p>
+  <p class="crimson">Self-confident</p>
+  <p class="red">Fiery</p>
+  <p class="red">Hopeful</p>
+  <p class="red">Vibrant</p>
+  <p class="red">Proud</p>
+  <p class="purple">Confident</p>
+  <p class="blue">Timid</p>
+  <p class="blue">Insecure</p>
+  <p class="blue">Shy</p>
+  <p class="blue">Meek</p>
+  <p class="blue">Humble</p>
+  <p class="blue">Diffident</p>
+  <p class="lightseanavy">Anxious</p>
+  <p class="lightseanavy">Nervous</p>
+  <p class="lightseanavy">Bashful</p> 
+  <p class="lightseanavy">Overmodest</p> 
+  <p class="lightseanavy">Quiet</p>
+  <p class="lightseanavy">Jittery</p>
+  <p class="lightseanavy">Depressed</p>
+  <p class="lightseanavy">Mousy</p>
+  <p class="lightseanavy">Self-critical</p>
+  <p class="lightseanavy">Modest</p>
+  <p class="lightseanavy">Demure</p>
+  <p class="lightseanavy">Self-deprecating</p>
+  <p class="black">Self-reporachful</p>
+  <p class="black">Unassertive</p>
+  <p class="black">Unconfident</p>
+<script>
+window.onload = () => {
+  // --- Text gradients per class ---
+  const classGradients = {
+    "black": ["black", "gray"],
+    "dark-red": ["firebrick", "darkred"],
+    "crimson": ["crimson", "red"],
+    "red": ["red", "orange"],
+    "purple": ["#9920F7", "violet"],
+    "blue": ["blue", "lightblue"],
+    "lightseanavy": ["#0B5380", "#2E5D7F"]
+  };
+
+  // --- Function to darken a color ---
+  function darkenColor(color, amount = 40) {
+    const ctx = document.createElement("canvas").getContext("2d");
+    ctx.fillStyle = color;
+    const computed = ctx.fillStyle; // normalized color
+    const rgb = computed.match(/\d+/g).map(Number);
+    const darkened = rgb.map(v => Math.max(v - amount, 0));
+    return `rgb(${darkened.join(",")})`;
+  }
+
+  // --- Apply text gradients ---
+  const paragraphs = document.querySelectorAll("p");
+  paragraphs.forEach(p => {
+    const cls = p.className;
+    const [startColor, endColor] = classGradients[cls] || ["black", "gray"];
+    p.style.background = `linear-gradient(to bottom, ${startColor}, ${endColor})`;
+    p.style.webkitBackgroundClip = "text";
+    p.style.webkitTextFillColor = "transparent";
+    p.style.backgroundClip = "text"; // Firefox
+    p.style.color = "transparent";
+  });
+
+  // --- Build a background gradient from text zones ---
+  function buildBackgroundGradient() {
+    const docHeight = document.body.scrollHeight;
+    const stops = [];
+
+    paragraphs.forEach(p => {
+      const rect = p.getBoundingClientRect();
+      const topPercent = ((rect.top + window.scrollY) / docHeight) * 100;
+      const bottomPercent = ((rect.top + window.scrollY + rect.height) / docHeight) * 100;
+      const cls = p.className;
+      const [startColor, endColor] = classGradients[cls] || ["black", "gray"];
+      stops.push(`${darkenColor(startColor)} ${topPercent.toFixed(1)}%`);
+      stops.push(`${darkenColor(endColor)} ${bottomPercent.toFixed(1)}%`);
+    });
+
+    return stops.join(", ");
+  }
+
+  // --- Rotate the background ---
+  let angle = 180;
+  setInterval(() => {
+    const bgGradient = buildBackgroundGradient();
+    document.body.style.background = `linear-gradient(${angle}deg, ${bgGradient})`;
+    document.body.style.backgroundAttachment = "fixed"; // so it rotates smoothly
+    angle += 0.2; // adjust rotation speed here
+  }, 50);
+};
+</script>
+</body>
+</html>
